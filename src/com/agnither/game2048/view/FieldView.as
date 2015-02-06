@@ -35,6 +35,7 @@ public class FieldView extends Sprite {
         _cells = new <CellView>[];
         for (var i:int = 0; i < _field.cells.length; i++) {
             var cell: Cell = _field.cells[i];
+            cell.addEventListener(Cell.FILL, handleFill);
             cell.addEventListener(Cell.MOVE, handleMove);
             var cellView: CellView = new CellView(cell);
             cellView.x = cell.x * 100;
@@ -43,6 +44,11 @@ public class FieldView extends Sprite {
             _cells.push(cellView);
             _cellsDict[cell] = cellView;
         }
+    }
+
+    private function handleFill(e: Event):void {
+        var cell: Cell = e.currentTarget as Cell;
+        _cellsDict[cell].appear();
     }
 
     private function handleMove(e: Event):void {
@@ -55,16 +61,37 @@ public class FieldView extends Sprite {
         var phantomView: CellView = new CellView(cell);
         phantomView.x = cell.x * 100;
         phantomView.y = cell.y * 100;
-        phantomView.value = cellView.value;
+        phantomView.value = target.value;
         _phantomContainer.addChild(phantomView);
 
         cellView.update();
 
         Starling.juggler.tween(phantomView, 0.2, {x: targetView.x, y: targetView.y, transition: Transitions.EASE_OUT, onComplete: function ():void {
             targetView.update();
-
-            _phantomContainer.removeChild(phantomView);
+            phantomView.destroy();
         }});
+    }
+
+    public function destroy():void {
+        for (var i:int = 0; i < _field.cells.length; i++) {
+            var cell: Cell = _field.cells[i];
+            cell.removeEventListener(Cell.FILL, handleFill);
+            cell.removeEventListener(Cell.MOVE, handleMove);
+            _cellsDict[cell].destroy();
+        }
+
+        _cells = null;
+        _cellsDict = null;
+
+        _container.removeFromParent(true);
+        _container = null;
+
+        _phantomContainer.removeFromParent(true);
+        _phantomContainer = null;
+
+        _field = null;
+
+        removeFromParent(true);
     }
 }
 }
