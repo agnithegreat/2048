@@ -9,6 +9,7 @@ import flash.utils.Dictionary;
 
 import starling.animation.Transitions;
 import starling.core.Starling;
+import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.Event;
 
@@ -19,11 +20,15 @@ public class FieldView extends Sprite {
     private var _cellsDict: Dictionary;
     private var _cells: Vector.<CellView>;
 
+    private var _back: Quad;
     private var _container: Sprite;
     private var _phantomContainer: Sprite;
 
     public function FieldView(field: Field) {
         _field = field;
+
+        _back = new Quad(400, 400, 0xDDC9A0);
+        addChild(_back);
 
         _container = new Sprite();
         addChild(_container);
@@ -82,6 +87,9 @@ public class FieldView extends Sprite {
 
         _cells = null;
         _cellsDict = null;
+
+        _back.removeFromParent(true);
+        _back = null;
 
         _container.removeFromParent(true);
         _container = null;
