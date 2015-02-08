@@ -8,12 +8,9 @@ import flash.display.BitmapData;
 import flash.display.Shape;
 
 import starling.animation.Transitions;
-
 import starling.core.Starling;
-
 import starling.display.Image;
 import starling.display.Sprite;
-import starling.events.Event;
 import starling.text.TextField;
 import starling.textures.Texture;
 
@@ -53,7 +50,7 @@ public class CellView extends Sprite {
         _image = new Image(cellTexture);
         _container.addChild(_image);
 
-        _value = new TextField(100, 100, "", "Verdana", 30, 0xFFFFFF, true);
+        _value = new TextField(100, 100, "", "Verdana", 26, 0xFFFFFF, true);
         _container.addChild(_value);
 
         _container.pivotX = _container.width/2;

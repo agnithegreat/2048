@@ -42,8 +42,9 @@ public class Cell extends EventDispatcher {
     }
 
     public function combine(cell: Cell):void {
-        setValue(value + cell.value);
+        var newValue: int = value + cell.value;
         cell.empty();
+        setValue(newValue);
         cell.move(this);
     }
 

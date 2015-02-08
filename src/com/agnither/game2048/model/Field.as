@@ -7,9 +7,15 @@ import com.agnither.game2048.utils.array2d.Array2D;
 
 import flash.utils.Dictionary;
 
-import starling.events.Event;
+import starling.core.Starling;
 
-public class Field {
+import starling.events.Event;
+import starling.events.EventDispatcher;
+
+public class Field extends EventDispatcher {
+
+    public static const FORCE_UPDATE: String = "force_update_Field";
+    public static const GAME_OVER: String = "game_over_Field";
 
     private static var base: int = 2;
     private static var size: int = 4;
@@ -23,6 +29,8 @@ public class Field {
     private var _empty: Vector.<Cell>;
 
     private var _field: Array2D;
+
+    private var _gameOver: Boolean;
 
     public function Field() {
     }
@@ -43,9 +51,21 @@ public class Field {
             _cells.push(cell);
             _empty.push(cell);
         }
+
+        _gameOver = false;
+    }
+
+    public function start():void {
+        newStep();
     }
 
     public function move(direction: DirectionEnum):void {
+        if (_gameOver) {
+            return;
+        }
+
+        dispatchEventWith(FORCE_UPDATE);
+
         switch (direction) {
             case DirectionEnum.UP:
                 _field.rotateField(0, Array2D.DIRECTION_CW);
@@ -94,24 +114,58 @@ public class Field {
 
         if (moved) {
             newStep();
+            checkMoves();
         }
     }
 
-    public function newStep():void {
+    private function newStep():void {
         if (_empty.length > 0) {
             var rand: int = _empty.length * Math.random();
             var cell: Cell = _empty[rand];
             cell.fill(base);
-        } else {
-            throw new Error("Game Over!");
         }
+    }
+
+    private function checkMoves():void {
+        if (_empty.length > 0) {
+            return;
+        }
+
+        var haveMoves: Boolean = false;
+
+        for (var i:int = 0; i <= 1; i++) {
+            _field.rotateField(i, Array2D.DIRECTION_CW);
+            for (var j:int = 0; j < size; j++) {
+                if (checkRow(_field.getRotatedColumn(j))) {
+                    haveMoves = true;
+                }
+            }
+        }
+
+        if (!haveMoves) {
+            _gameOver = true;
+            Starling.juggler.delayCall(gameOver, 1);
+        }
+    }
+
+    private function gameOver():void {
+        dispatchEventWith(GAME_OVER);
+    }
+
+    private function checkRow(row: Array):Boolean {
+        for (var i:int = 0; i < row.length-1; i++) {
+            if (row[i].value == row[i+1].value) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function handleUpdateValue(e: Event):void {
         var cell: Cell = e.currentTarget as Cell;
         if (cell.value) {
             var index: int = _empty.indexOf(cell);
-            if (index>=0) {
+            if (index >= 0) {
                 _empty.splice(index, 1);
             }
         } else {

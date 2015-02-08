@@ -9,6 +9,7 @@ import com.agnither.game2048.view.FieldView;
 import flash.ui.Keyboard;
 
 import starling.display.Sprite;
+import starling.events.Event;
 import starling.events.KeyboardEvent;
 
 public class Application extends Sprite implements IStartable {
@@ -23,7 +24,7 @@ public class Application extends Sprite implements IStartable {
         _fieldView = new FieldView(_field);
         addChild(_fieldView);
 
-        _field.newStep();
+        _field.start();
 
         stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
     }

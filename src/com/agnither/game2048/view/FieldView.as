@@ -8,10 +8,12 @@ import com.agnither.game2048.model.Field;
 import flash.utils.Dictionary;
 
 import starling.animation.Transitions;
+import starling.animation.Tween;
 import starling.core.Starling;
 import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.Event;
+import starling.text.TextField;
 
 public class FieldView extends Sprite {
 
@@ -24,8 +26,14 @@ public class FieldView extends Sprite {
     private var _container: Sprite;
     private var _phantomContainer: Sprite;
 
+    private var _tweens: Vector.<Tween>;
+
+    private var _gameOver: TextField;
+
     public function FieldView(field: Field) {
         _field = field;
+        _field.addEventListener(Field.FORCE_UPDATE, handleForceUpdate);
+        _field.addEventListener(Field.GAME_OVER, handleGameOver);
 
         _back = new Quad(400, 400, 0xDDC9A0);
         addChild(_back);
@@ -49,6 +57,12 @@ public class FieldView extends Sprite {
             _cells.push(cellView);
             _cellsDict[cell] = cellView;
         }
+
+        _tweens = new <Tween>[];
+
+        _gameOver = new TextField(400, 400, "Game Over", "Verdana", 60, 0xFFFFFF, true);
+        _gameOver.visible = false;
+        addChild(_gameOver);
     }
 
     private function handleFill(e: Event):void {
@@ -71,10 +85,23 @@ public class FieldView extends Sprite {
 
         cellView.update();
 
-        Starling.juggler.tween(phantomView, 0.2, {x: targetView.x, y: targetView.y, transition: Transitions.EASE_OUT, onComplete: function ():void {
+        var tween: Tween = Starling.juggler.tween(phantomView, 0.2, {x: targetView.x, y: targetView.y, transition: Transitions.EASE_OUT, onComplete: function ():void {
             targetView.update();
             phantomView.destroy();
-        }});
+        }}) as Tween;
+
+        _tweens.push(tween);
+    }
+
+    private function handleForceUpdate(e: Event):void {
+        while (_tweens.length > 0) {
+            var tween:Tween = _tweens.shift();
+            tween.advanceTime(tween.totalTime);
+        }
+    }
+
+    private function handleGameOver(e: Event):void {
+        _gameOver.visible = true;
     }
 
     public function destroy():void {
@@ -97,7 +124,12 @@ public class FieldView extends Sprite {
         _phantomContainer.removeFromParent(true);
         _phantomContainer = null;
 
+        _field.removeEventListener(Field.FORCE_UPDATE, handleForceUpdate);
+        _field.removeEventListener(Field.GAME_OVER, handleGameOver);
         _field = null;
+
+        _gameOver.removeFromParent(true);
+        _gameOver = null;
 
         removeFromParent(true);
     }
