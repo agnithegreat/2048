@@ -11,7 +11,6 @@ import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
 import starling.display.Image;
-import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.text.TextField;
@@ -32,7 +31,7 @@ public class FieldView extends Sprite {
 
     private var _tweens: Vector.<Tween>;
 
-    private var _gameOver: Image;
+    private var _gameOver: TextField;
 
     public function FieldView(field: Field) {
         _field = field;
@@ -40,6 +39,8 @@ public class FieldView extends Sprite {
         _field.addEventListener(Field.GAME_OVER, handleGameOver);
 
         _back = new Image(atlas.getTexture("back"));
+        _back.width = 400;
+        _back.height = 400;
         addChild(_back);
 
         _container = new Sprite();
@@ -64,9 +65,13 @@ public class FieldView extends Sprite {
 
         _tweens = new <Tween>[];
 
-        _gameOver = new Image(atlas.getTexture("gameover"));
+        _gameOver = new TextField(400, 400, "Game Over", "gameover", -1, 0xFFFFFF);
         _gameOver.visible = false;
         addChild(_gameOver);
+
+        var at: Image = new Image(atlas.texture);
+        at.x = 400;
+        addChild(at);
     }
 
     private function handleFill(e: Event):void {

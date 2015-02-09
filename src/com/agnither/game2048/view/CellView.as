@@ -4,15 +4,11 @@
 package com.agnither.game2048.view {
 import com.agnither.game2048.model.Cell;
 
-import flash.display.BitmapData;
-import flash.display.Shape;
-
 import starling.animation.Transitions;
 import starling.core.Starling;
 import starling.display.Image;
 import starling.display.Sprite;
 import starling.text.TextField;
-import starling.textures.Texture;
 import starling.textures.TextureAtlas;
 
 public class CellView extends Sprite {
@@ -23,7 +19,7 @@ public class CellView extends Sprite {
 
     private var _container: Sprite;
     private var _image: Image;
-    private var _label: Image;
+    private var _label: TextField;
 
     private var _value: int;
     public function get value():int {
@@ -33,7 +29,7 @@ public class CellView extends Sprite {
         _value = val;
 
         if (_value) {
-            _label.texture = _atlas.getTexture(String(_value));
+            _label.text = String(_value);
         }
         _container.visible = true;
     }
@@ -51,7 +47,7 @@ public class CellView extends Sprite {
 
         _value = 0;
 
-        _label = new Image(_atlas.getTexture("2"));
+        _label = new TextField(100, 100, "", "numbers", -1, 0xFFFFFF);
         _container.addChild(_label);
 
         _container.pivotX = _container.width/2;
