@@ -10,32 +10,36 @@ import flash.utils.Dictionary;
 import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
+import starling.display.Image;
 import starling.display.Quad;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.text.TextField;
+import starling.textures.TextureAtlas;
 
 public class FieldView extends Sprite {
+
+    private static var atlas: TextureAtlas = Atlas.buildAtlas();
 
     private var _field: Field;
 
     private var _cellsDict: Dictionary;
     private var _cells: Vector.<CellView>;
 
-    private var _back: Quad;
+    private var _back: Image;
     private var _container: Sprite;
     private var _phantomContainer: Sprite;
 
     private var _tweens: Vector.<Tween>;
 
-    private var _gameOver: TextField;
+    private var _gameOver: Image;
 
     public function FieldView(field: Field) {
         _field = field;
         _field.addEventListener(Field.FORCE_UPDATE, handleForceUpdate);
         _field.addEventListener(Field.GAME_OVER, handleGameOver);
 
-        _back = new Quad(400, 400, 0xDDC9A0);
+        _back = new Image(atlas.getTexture("back"));
         addChild(_back);
 
         _container = new Sprite();
@@ -50,7 +54,7 @@ public class FieldView extends Sprite {
             var cell: Cell = _field.cells[i];
             cell.addEventListener(Cell.FILL, handleFill);
             cell.addEventListener(Cell.MOVE, handleMove);
-            var cellView: CellView = new CellView(cell);
+            var cellView: CellView = new CellView(cell, atlas);
             cellView.x = cell.x * 100;
             cellView.y = cell.y * 100;
             _container.addChild(cellView);
@@ -60,7 +64,7 @@ public class FieldView extends Sprite {
 
         _tweens = new <Tween>[];
 
-        _gameOver = new TextField(400, 400, "Game Over", "Verdana", 60, 0xFFFFFF, true);
+        _gameOver = new Image(atlas.getTexture("gameover"));
         _gameOver.visible = false;
         addChild(_gameOver);
     }
@@ -77,7 +81,7 @@ public class FieldView extends Sprite {
         var cellView: CellView = _cellsDict[cell];
         var targetView: CellView = _cellsDict[target];
 
-        var phantomView: CellView = new CellView(cell);
+        var phantomView: CellView = new CellView(cell, atlas);
         phantomView.x = cell.x * 100;
         phantomView.y = cell.y * 100;
         phantomView.value = target.value;

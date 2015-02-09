@@ -13,45 +13,46 @@ import starling.display.Image;
 import starling.display.Sprite;
 import starling.text.TextField;
 import starling.textures.Texture;
+import starling.textures.TextureAtlas;
 
 public class CellView extends Sprite {
 
-    private static var cellTexture: Texture = getTexture();
-    private static function getTexture():Texture {
-        var shape: Shape = new Shape();
-        shape.graphics.beginFill(0xe2b120);
-        shape.graphics.drawRoundRect(10, 10, 80, 80, 30);
-
-        var bd: BitmapData = new BitmapData(100, 100, true, 0);
-        bd.draw(shape);
-        return Texture.fromBitmapData(bd);
-    }
-
     private var _cell: Cell;
+
+    private var _atlas: TextureAtlas;
 
     private var _container: Sprite;
     private var _image: Image;
-    private var _value: TextField;
+    private var _label: Image;
 
+    private var _value: int;
     public function get value():int {
-        return int(_value.text);
+        return _value;
     }
-    public function set value(text: int):void {
-        _value.text = String(text);
+    public function set value(val: int):void {
+        _value = val;
+
+        if (_value) {
+            _label.texture = _atlas.getTexture(String(_value));
+        }
         _container.visible = true;
     }
 
-    public function CellView(cell: Cell) {
+    public function CellView(cell: Cell, atlas: TextureAtlas) {
         _cell = cell;
+
+        _atlas = atlas;
 
         _container = new Sprite();
         addChild(_container);
 
-        _image = new Image(cellTexture);
+        _image = new Image(atlas.getTexture("cell"));
         _container.addChild(_image);
 
-        _value = new TextField(100, 100, "", "Verdana", 26, 0xFFFFFF, true);
-        _container.addChild(_value);
+        _value = 0;
+
+        _label = new Image(_atlas.getTexture("2"));
+        _container.addChild(_label);
 
         _container.pivotX = _container.width/2;
         _container.pivotY = _container.height/2;
@@ -76,8 +77,8 @@ public class CellView extends Sprite {
         _image.removeFromParent(true);
         _image = null;
 
-        _value.removeFromParent(true);
-        _value = null;
+        _label.removeFromParent(true);
+        _label = null;
 
         _container.removeFromParent(true);
         _container = null;
