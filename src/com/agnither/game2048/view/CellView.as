@@ -48,6 +48,7 @@ public class CellView extends Sprite {
         _value = 0;
 
         _label = new TextField(100, 100, "", "numbers", -1, 0xFFFFFF);
+        _label.batchable = true;
         _container.addChild(_label);
 
         _container.pivotX = _container.width/2;

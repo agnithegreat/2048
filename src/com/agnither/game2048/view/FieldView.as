@@ -66,6 +66,7 @@ public class FieldView extends Sprite {
         _tweens = new <Tween>[];
 
         _gameOver = new TextField(400, 400, "Game Over", "gameover", -1, 0xFFFFFF);
+        _gameOver.batchable = true;
         _gameOver.visible = false;
         addChild(_gameOver);
 

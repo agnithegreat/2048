@@ -4,13 +4,19 @@
 package com.agnither.game2048 {
 import com.agnither.game2048.enums.DirectionEnum;
 import com.agnither.game2048.model.Field;
+import com.agnither.game2048.view.Atlas;
 import com.agnither.game2048.view.FieldView;
 
 import flash.ui.Keyboard;
 
+import starling.core.Starling;
+
+import starling.display.Image;
+
 import starling.display.Sprite;
-import starling.events.Event;
 import starling.events.KeyboardEvent;
+import starling.text.TextField;
+import starling.textures.TextureAtlas;
 
 public class Application extends Sprite implements IStartable {
 
@@ -18,16 +24,37 @@ public class Application extends Sprite implements IStartable {
     private var _fieldView: FieldView;
 
     public function start():void {
-        _field = new Field();
-        _field.init();
+        var atlas: TextureAtlas = Atlas.buildAtlas();
 
-        _fieldView = new FieldView(_field);
-        addChild(_fieldView);
+        var tf1: TextField = new TextField(600, 100, "Game Over", "gameover", -1, 0xFFFFFF);
+        tf1.batchable = true;
+        addChild(tf1);
 
-        _field.start();
+        var tf2: TextField = new TextField(600, 100, "Game Over", "Verdana", 60, 0xFFFFFF, true);
+        addChild(tf2);
+        tf2.visible = false;
 
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+        Starling.juggler.repeatCall(function ():void {
+            tf1.visible = !tf1.visible;
+            tf2.visible = !tf2.visible;
+        }, 0.4);
+
+        var atlasView: Image = new Image(atlas.texture);
+        atlasView.y = 100;
+        addChild(atlasView);
     }
+
+//    public function start():void {
+//        _field = new Field();
+//        _field.init();
+//
+//        _fieldView = new FieldView(_field);
+//        addChild(_fieldView);
+//
+//        _field.start();
+//
+//        stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+//    }
 
     private function handleKeyDown(e: KeyboardEvent):void {
         switch (e.keyCode) {
