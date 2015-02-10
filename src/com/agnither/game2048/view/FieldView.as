@@ -31,6 +31,7 @@ public class FieldView extends Sprite {
 
     private var _tweens: Vector.<Tween>;
 
+    private var _hider: Image;
     private var _gameOver: TextField;
 
     public function FieldView(field: Field) {
@@ -65,14 +66,16 @@ public class FieldView extends Sprite {
 
         _tweens = new <Tween>[];
 
+        _hider = new Image(atlas.getTexture("hider"));
+        _hider.width = 400;
+        _hider.height = 400;
+        _hider.visible = false;
+        addChild(_hider);
+
         _gameOver = new TextField(400, 400, "Game Over", "gameover", -1, 0xFFFFFF);
         _gameOver.batchable = true;
         _gameOver.visible = false;
         addChild(_gameOver);
-
-        var at: Image = new Image(atlas.texture);
-        at.x = 400;
-        addChild(at);
     }
 
     private function handleFill(e: Event):void {
@@ -111,6 +114,7 @@ public class FieldView extends Sprite {
     }
 
     private function handleGameOver(e: Event):void {
+        _hider.visible = true;
         _gameOver.visible = true;
     }
 
@@ -137,6 +141,9 @@ public class FieldView extends Sprite {
         _field.removeEventListener(Field.FORCE_UPDATE, handleForceUpdate);
         _field.removeEventListener(Field.GAME_OVER, handleGameOver);
         _field = null;
+
+        _hider.removeFromParent(true);
+        _hider = null;
 
         _gameOver.removeFromParent(true);
         _gameOver = null;

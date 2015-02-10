@@ -37,10 +37,21 @@ public class Atlas {
         return bd;
     }
 
+    private static function getHiderTexture():BitmapData {
+        var shape: Shape = new Shape();
+        shape.graphics.beginFill(0, 0.7);
+        shape.graphics.drawRect(0, 0, 10, 10);
+
+        var bd: BitmapData = new BitmapData(10, 10, true, 0);
+        bd.draw(shape);
+        return bd;
+    }
+
     public static function buildAtlas():TextureAtlas {
         var textures: Object = {};
         textures.back = getBackTexture();
         textures.cell = getCellTexture();
+        textures.hider = getHiderTexture();
 
         var numbers: FontData = FontBuilder.buildFontFromChars("1234567890", "Verdana", 26, 0xFFFFFF, true);
         textures.numbers = numbers.texture;
