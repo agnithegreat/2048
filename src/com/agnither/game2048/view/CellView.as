@@ -3,19 +3,32 @@
  */
 package com.agnither.game2048.view {
 import com.agnither.game2048.model.Cell;
+import com.agnither.game2048.storage.Resources;
+import com.agnither.utils.gui.components.AbstractComponent;
 
 import starling.animation.Transitions;
 import starling.core.Starling;
 import starling.display.Image;
 import starling.display.Sprite;
 import starling.text.TextField;
-import starling.textures.TextureAtlas;
 
-public class CellView extends Sprite {
+public class CellView extends AbstractComponent {
+
+    private static const stack: Vector.<CellView> = new <CellView>[];
+    public static function getCellView(cell: Cell):CellView {
+        if (stack.length > 0) {
+            return stack.shift();
+        }
+        return new CellView(cell);
+    }
+    public static function destroy():void {
+        while (stack.length > 0) {
+            var cellView: CellView = stack.shift();
+            cellView.destroy();
+        }
+    }
 
     private var _cell: Cell;
-
-    private var _atlas: TextureAtlas;
 
     private var _container: Sprite;
     private var _image: Image;
@@ -34,15 +47,15 @@ public class CellView extends Sprite {
         _container.visible = true;
     }
 
-    public function CellView(cell: Cell, atlas: TextureAtlas) {
+    public function CellView(cell: Cell) {
         _cell = cell;
+    }
 
-        _atlas = atlas;
-
+    override protected function initialize():void {
         _container = new Sprite();
         addChild(_container);
 
-        _image = new Image(atlas.getTexture("cell"));
+        _image = new Image(Resources.getTexture("cell"));
         _container.addChild(_image);
 
         _value = 0;
@@ -70,7 +83,12 @@ public class CellView extends Sprite {
         _container.visible = _cell.value>0;
     }
 
-    public function destroy():void {
+    public function free():void {
+        removeFromParent();
+        stack.push(this);
+    }
+
+    override public function destroy():void {
         _image.removeFromParent(true);
         _image = null;
 
@@ -83,6 +101,8 @@ public class CellView extends Sprite {
         _cell = null;
 
         removeFromParent(true);
+
+        super.destroy();
     }
 }
 }

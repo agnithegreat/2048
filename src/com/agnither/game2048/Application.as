@@ -4,6 +4,8 @@
 package com.agnither.game2048 {
 import com.agnither.game2048.enums.DirectionEnum;
 import com.agnither.game2048.model.Field;
+import com.agnither.game2048.storage.Resources;
+import com.agnither.game2048.view.Atlas;
 import com.agnither.game2048.view.FieldView;
 
 import flash.ui.Keyboard;
@@ -17,6 +19,8 @@ public class Application extends Sprite implements IStartable {
     private var _fieldView: FieldView;
 
     public function start():void {
+        Resources.init(Atlas.buildAtlas());
+
         _field = new Field();
         _field.init();
 

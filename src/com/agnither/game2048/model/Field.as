@@ -8,7 +8,6 @@ import com.agnither.game2048.utils.array2d.Array2D;
 import flash.utils.Dictionary;
 
 import starling.core.Starling;
-
 import starling.events.Event;
 import starling.events.EventDispatcher;
 
@@ -17,7 +16,12 @@ public class Field extends EventDispatcher {
     public static const FORCE_UPDATE: String = "force_update_Field";
     public static const GAME_OVER: String = "game_over_Field";
 
-    private static var base: int = 2;
+    private static var baseVariants: Array = [2, 2, 2, 2, 2, 2, 2, 4];
+    private static function get base():int {
+        var rand: int = Math.random() * baseVariants.length;
+        return baseVariants[rand]
+    }
+
     private static var size: int = 4;
 
     private var _cellsDict: Dictionary;

@@ -56,7 +56,7 @@ public class Atlas {
         var numbers: FontData = FontBuilder.buildFontFromChars("1234567890", "Verdana", 26, 0xFFFFFF, true);
         textures.numbers = numbers.texture;
 
-        var gameover: FontData = FontBuilder.buildFontFromChars("Game Over", "Verdana", 60, 0xFFFFFF, true);
+        var gameover: FontData = FontBuilder.buildFontFromChars("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ", "Verdana", 60, 0xFFFFFF, true);
         textures.gameover = gameover.texture;
 
         var atlas: AtlasData = TextureAtlasBuilder.buildTextureAtlas(textures, 2);

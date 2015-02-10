@@ -4,6 +4,8 @@
 package com.agnither.game2048.view {
 import com.agnither.game2048.model.Cell;
 import com.agnither.game2048.model.Field;
+import com.agnither.game2048.storage.Resources;
+import com.agnither.utils.gui.components.Screen;
 
 import flash.utils.Dictionary;
 
@@ -14,11 +16,8 @@ import starling.display.Image;
 import starling.display.Sprite;
 import starling.events.Event;
 import starling.text.TextField;
-import starling.textures.TextureAtlas;
 
-public class FieldView extends Sprite {
-
-    private static var atlas: TextureAtlas = Atlas.buildAtlas();
+public class FieldView extends Screen {
 
     private var _field: Field;
 
@@ -36,10 +35,13 @@ public class FieldView extends Sprite {
 
     public function FieldView(field: Field) {
         _field = field;
+    }
+
+    override protected function initialize():void {
         _field.addEventListener(Field.FORCE_UPDATE, handleForceUpdate);
         _field.addEventListener(Field.GAME_OVER, handleGameOver);
 
-        _back = new Image(atlas.getTexture("back"));
+        _back = new Image(Resources.getTexture("back"));
         _back.width = 400;
         _back.height = 400;
         addChild(_back);
@@ -56,7 +58,7 @@ public class FieldView extends Sprite {
             var cell: Cell = _field.cells[i];
             cell.addEventListener(Cell.FILL, handleFill);
             cell.addEventListener(Cell.MOVE, handleMove);
-            var cellView: CellView = new CellView(cell, atlas);
+            var cellView: CellView = CellView.getCellView(cell);
             cellView.x = cell.x * 100;
             cellView.y = cell.y * 100;
             _container.addChild(cellView);
@@ -66,7 +68,7 @@ public class FieldView extends Sprite {
 
         _tweens = new <Tween>[];
 
-        _hider = new Image(atlas.getTexture("hider"));
+        _hider = new Image(Resources.getTexture("hider"));
         _hider.width = 400;
         _hider.height = 400;
         _hider.visible = false;
@@ -90,17 +92,17 @@ public class FieldView extends Sprite {
         var cellView: CellView = _cellsDict[cell];
         var targetView: CellView = _cellsDict[target];
 
-        var phantomView: CellView = new CellView(cell, atlas);
+        var phantomView: CellView = CellView.getCellView(cell);
         phantomView.x = cell.x * 100;
         phantomView.y = cell.y * 100;
-        phantomView.value = target.value;
         _phantomContainer.addChild(phantomView);
+        phantomView.value = target.value;
 
         cellView.update();
 
         var tween: Tween = Starling.juggler.tween(phantomView, 0.2, {x: targetView.x, y: targetView.y, transition: Transitions.EASE_OUT, onComplete: function ():void {
             targetView.update();
-            phantomView.destroy();
+            phantomView.free();
         }}) as Tween;
 
         _tweens.push(tween);
@@ -118,7 +120,7 @@ public class FieldView extends Sprite {
         _gameOver.visible = true;
     }
 
-    public function destroy():void {
+    override public function destroy():void {
         for (var i:int = 0; i < _field.cells.length; i++) {
             var cell: Cell = _field.cells[i];
             cell.removeEventListener(Cell.FILL, handleFill);
@@ -149,6 +151,8 @@ public class FieldView extends Sprite {
         _gameOver = null;
 
         removeFromParent(true);
+
+        super.destroy();
     }
 }
 }
