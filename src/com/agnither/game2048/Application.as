@@ -4,14 +4,18 @@
 package com.agnither.game2048 {
 import com.agnither.game2048.enums.DirectionEnum;
 import com.agnither.game2048.model.Field;
+import com.agnither.game2048.storage.MockAtlas;
 import com.agnither.game2048.storage.Resources;
-import com.agnither.game2048.view.Atlas;
 import com.agnither.game2048.view.FieldView;
+import com.utils.MemoryTracker;
 
 import flash.ui.Keyboard;
 
 import starling.display.Sprite;
 import starling.events.KeyboardEvent;
+import starling.events.Touch;
+import starling.events.TouchEvent;
+import starling.events.TouchPhase;
 
 public class Application extends Sprite implements IStartable {
 
@@ -19,8 +23,16 @@ public class Application extends Sprite implements IStartable {
     private var _fieldView: FieldView;
 
     public function start():void {
-        Resources.init(Atlas.buildAtlas());
+        Resources.init(new MockAtlas());
 
+        newGame();
+
+        stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+
+        stage.addEventListener(TouchEvent.TOUCH, handleTouch);
+    }
+
+    private function newGame():void {
         _field = new Field();
         _field.init();
 
@@ -28,11 +40,24 @@ public class Application extends Sprite implements IStartable {
         addChild(_fieldView);
 
         _field.start();
+    }
 
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+    private function endGame():void {
+        _fieldView.destroy();
+        _fieldView = null;
+
+        _field.destroy();
+        _field = null;
+    }
+
+    private function restartGame():void {
+        endGame();
+        newGame();
     }
 
     private function handleKeyDown(e: KeyboardEvent):void {
+        MemoryTracker.logTracking();
+
         switch (e.keyCode) {
             case Keyboard.LEFT:
                 _field.move(DirectionEnum.LEFT);
@@ -48,6 +73,13 @@ public class Application extends Sprite implements IStartable {
                 break;
             default:
                 return;
+        }
+    }
+
+    private function handleTouch(e: TouchEvent):void {
+        var touch: Touch = e.getTouch(stage, TouchPhase.BEGAN);
+        if (touch && _field && _field.isGameOver) {
+            restartGame();
         }
     }
 }

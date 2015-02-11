@@ -35,6 +35,9 @@ public class Field extends EventDispatcher {
     private var _field: Array2D;
 
     private var _gameOver: Boolean;
+    public function get isGameOver():Boolean {
+        return _gameOver;
+    }
 
     public function Field() {
     }
@@ -175,6 +178,20 @@ public class Field extends EventDispatcher {
         } else {
             _empty.push(cell);
         }
+    }
+
+    public function destroy():void {
+        _cellsDict = null;
+
+        while (_cells.length > 0) {
+            var cell: Cell = _cells.shift();
+            cell.destroy();
+        }
+
+        _empty = null;
+
+        _field.destroy();
+        _field = null;
     }
 }
 }

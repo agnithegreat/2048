@@ -47,10 +47,18 @@ public class Array2D {
     }
 
     public function rotateField(rotation: int, direction: int):void {
-        _rotated = _field;
+        updateRotated(_field);
         for (var i:int = 0; i < rotation; i++) {
-            _rotated = direction==DIRECTION_CW ? rotateClockwise(_rotated) : rotateCounterClockwise(_rotated);
+            var temp: Array = direction==DIRECTION_CW ? rotateClockwise(_rotated) : rotateCounterClockwise(_rotated);
+            updateRotated(temp);
         }
+    }
+
+    private function updateRotated(array: Array):void {
+        if (_rotated != _field) {
+            destroyArray(_rotated);
+        }
+        _rotated = array;
     }
 
     public function getRotatedColumn(x: int):Array {
@@ -68,13 +76,11 @@ public class Array2D {
     private function rotateCounterClockwise(array:Array):Array {
         var transformedArray:Array = new Array();
         var row:int = -1;
-        for ( var i:int = array[0].length - 1; i > -1; i-- )
-        {
+        for ( var i:int = array[0].length - 1; i > -1; i-- ) {
             row++;
             transformedArray[row] = new Array();
 
-            for ( var j:int = 0; j < array.length; j++ )
-            {
+            for ( var j:int = 0; j < array.length; j++ ) {
                 transformedArray[row][j] = array[j][i];
             }
         }
@@ -82,19 +88,36 @@ public class Array2D {
     }
     private function rotateClockwise(array:Array):Array {
         var transformedArray:Array = new Array();
-        for ( var i:int = 0; i < array[0].length; i++ )
-        {
+        for ( var i:int = 0; i < array[0].length; i++ ) {
             transformedArray[i] = new Array();
 
-            // fill the row with everything in the appropriate column of the source array
             var transformedArrayColumn:int = -1;
-            for ( var j:int = array.length - 1; j > -1; j-- )
-            {
+            for ( var j:int = array.length - 1; j > -1; j-- ) {
                 transformedArrayColumn++;
                 transformedArray[i][transformedArrayColumn] = array[j][i]
             }
         }
         return transformedArray;
+    }
+
+    private function destroyArray(array: Array):void {
+        if (array) {
+            for (var i:int = 0; i < array.length; i++) {
+                var row:Array = array[i];
+                for (var j:int = 0; j < row.length; j++) {
+                    row[i] = null;
+                }
+                array[i] = null;
+            }
+        }
+    }
+
+    public function destroy():void {
+        destroyArray(_rotated);
+        _rotated = null;
+
+        destroyArray(_field);
+        _field = null;
     }
 }
 }

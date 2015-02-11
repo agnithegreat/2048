@@ -5,6 +5,7 @@ package com.agnither.game2048.view {
 import com.agnither.game2048.model.Cell;
 import com.agnither.game2048.storage.Resources;
 import com.agnither.utils.gui.components.AbstractComponent;
+import com.utils.MemoryTracker;
 
 import starling.animation.Transitions;
 import starling.core.Starling;
@@ -13,20 +14,6 @@ import starling.display.Sprite;
 import starling.text.TextField;
 
 public class CellView extends AbstractComponent {
-
-    private static const stack: Vector.<CellView> = new <CellView>[];
-    public static function getCellView(cell: Cell):CellView {
-        if (stack.length > 0) {
-            return stack.shift();
-        }
-        return new CellView(cell);
-    }
-    public static function destroy():void {
-        while (stack.length > 0) {
-            var cellView: CellView = stack.shift();
-            cellView.destroy();
-        }
-    }
 
     private var _cell: Cell;
 
@@ -83,15 +70,11 @@ public class CellView extends AbstractComponent {
         _container.visible = _cell.value>0;
     }
 
-    public function free():void {
-        removeFromParent();
-        stack.push(this);
-    }
-
     override public function destroy():void {
         _image.removeFromParent(true);
         _image = null;
 
+        _label.removeChildren(0, 0, true);
         _label.removeFromParent(true);
         _label = null;
 

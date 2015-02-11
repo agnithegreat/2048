@@ -7,14 +7,14 @@ import starling.textures.TextureAtlas;
 
 public class Resources {
 
-    private static var _resources: TextureAtlas;
+    private static var _resources: Atlas;
 
-    public static function init(resources: TextureAtlas):void {
+    public static function init(resources: Atlas):void {
         _resources = resources;
     }
 
     public static function getAtlas():Texture {
-        return _resources.texture;
+        return _resources.getAtlas();
     }
 
     public static function getTexture(name: String):Texture {

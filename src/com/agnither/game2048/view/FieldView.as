@@ -22,7 +22,6 @@ public class FieldView extends Screen {
     private var _field: Field;
 
     private var _cellsDict: Dictionary;
-    private var _cells: Vector.<CellView>;
 
     private var _back: Image;
     private var _container: Sprite;
@@ -53,16 +52,14 @@ public class FieldView extends Screen {
         addChild(_phantomContainer);
 
         _cellsDict = new Dictionary();
-        _cells = new <CellView>[];
         for (var i:int = 0; i < _field.cells.length; i++) {
             var cell: Cell = _field.cells[i];
             cell.addEventListener(Cell.FILL, handleFill);
             cell.addEventListener(Cell.MOVE, handleMove);
-            var cellView: CellView = CellView.getCellView(cell);
+            var cellView: CellView = new CellView(cell);
             cellView.x = cell.x * 100;
             cellView.y = cell.y * 100;
             _container.addChild(cellView);
-            _cells.push(cellView);
             _cellsDict[cell] = cellView;
         }
 
@@ -92,7 +89,7 @@ public class FieldView extends Screen {
         var cellView: CellView = _cellsDict[cell];
         var targetView: CellView = _cellsDict[target];
 
-        var phantomView: CellView = CellView.getCellView(cell);
+        var phantomView: CellView = new CellView(cell);
         phantomView.x = cell.x * 100;
         phantomView.y = cell.y * 100;
         _phantomContainer.addChild(phantomView);
@@ -100,12 +97,17 @@ public class FieldView extends Screen {
 
         cellView.update();
 
-        var tween: Tween = Starling.juggler.tween(phantomView, 0.2, {x: targetView.x, y: targetView.y, transition: Transitions.EASE_OUT, onComplete: function ():void {
-            targetView.update();
-            phantomView.free();
-        }}) as Tween;
-
+        var tween: Tween = Starling.juggler.tween(phantomView, 0.2, {x: targetView.x, y: targetView.y,
+                transition: Transitions.EASE_OUT, onComplete: onTweenComplete, onCompleteArgs: [targetView, phantomView]}) as Tween;
         _tweens.push(tween);
+
+        targetView = null;
+        phantomView = null;
+    }
+
+    private function onTweenComplete(targetView: CellView, phantomView: CellView):void {
+        targetView.update();
+        phantomView.destroy();
     }
 
     private function handleForceUpdate(e: Event):void {
@@ -121,14 +123,13 @@ public class FieldView extends Screen {
     }
 
     override public function destroy():void {
-        for (var i:int = 0; i < _field.cells.length; i++) {
-            var cell: Cell = _field.cells[i];
+        for (var cell: Cell in _cellsDict) {
             cell.removeEventListener(Cell.FILL, handleFill);
             cell.removeEventListener(Cell.MOVE, handleMove);
             _cellsDict[cell].destroy();
+            delete _cellsDict[cell];
+            cell = null;
         }
-
-        _cells = null;
         _cellsDict = null;
 
         _back.removeFromParent(true);
