@@ -13,6 +13,10 @@ public class Resources {
         _resources = resources;
     }
 
+    public static function getAtlas():Texture {
+        return _resources.texture;
+    }
+
     public static function getTexture(name: String):Texture {
         return _resources ? _resources.getTexture(name) : null;
     }
