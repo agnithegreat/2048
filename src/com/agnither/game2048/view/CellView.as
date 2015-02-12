@@ -41,6 +41,7 @@ public class CellView extends AbstractComponent {
 
         _value = 0;
 
+        // TODO: cell placement
         visible = false;
     }
 
