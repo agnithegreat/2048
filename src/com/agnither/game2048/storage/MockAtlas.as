@@ -2,6 +2,8 @@
  * Created by desktop on 11.02.2015.
  */
 package com.agnither.game2048.storage {
+import com.agnither.utils.gui.font.CharsetUtil;
+
 import flash.display.BitmapData;
 import flash.display.Shape;
 
@@ -12,8 +14,8 @@ public class MockAtlas extends Atlas {
         addBitmapData("cell", getCellTexture());
         addBitmapData("hider", getHiderTexture());
 
-        addFont("numbers", "1234567890", "Verdana", 26, 0xFFFFFF, true);
-        addFont("gameover", "Game Over", "Verdana", 60, 0xFFFFFF, true);
+        addFont("numbers", CharsetUtil.getChars("0-9"), "Verdana", 26, 0xFFFFFF, true);
+        addFont("gameover", CharsetUtil.getChars("A-Za-z "), "Verdana", 60, 0xFFFFFF, true);
 
         build();
     }
