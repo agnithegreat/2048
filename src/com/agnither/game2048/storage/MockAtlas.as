@@ -15,7 +15,7 @@ public class MockAtlas extends Atlas {
         addGraphics("cell", new CellGraphics());
         addGraphics("hider", new HiderGraphics());
 
-        addFont("numbers", CharsetUtil.getChars("0-9"), "Verdana", 26, 0xFFFFFF, true);
+        addFont("numbers", CharsetUtil.getChars("0-9"), "Verdana", 28, 0xFFFFFF, true);
         addFont("gameover", CharsetUtil.getChars("A-Za-z "), "Verdana", 60, 0xFFFFFF, true);
 
         build();

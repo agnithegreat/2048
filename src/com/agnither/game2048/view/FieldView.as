@@ -4,7 +4,8 @@
 package com.agnither.game2048.view {
 import com.agnither.game2048.model.Cell;
 import com.agnither.game2048.model.Field;
-import com.agnither.game2048.storage.Resources;
+import com.agnither.utils.gui.components.AbstractComponent;
+import com.agnither.utils.gui.components.Label;
 import com.agnither.utils.gui.components.Screen;
 
 import flash.utils.Dictionary;
@@ -12,44 +13,40 @@ import flash.utils.Dictionary;
 import starling.animation.Transitions;
 import starling.animation.Tween;
 import starling.core.Starling;
-import starling.display.Image;
-import starling.display.Sprite;
 import starling.events.Event;
-import starling.text.TextField;
 
-public class FieldView extends Screen {
+import view.field.FieldViewMC;
+
+public dynamic class FieldView extends Screen {
 
     private var _field: Field;
 
     private var _cellsDict: Dictionary;
 
-    private var _back: Image;
-    private var _container: Sprite;
-    private var _phantomContainer: Sprite;
+    private var _container: AbstractComponent;
+    private var _phantomContainer: AbstractComponent;
+    private var _hider: AbstractComponent;
+    private var _gameOver: Label;
 
     private var _tweens: Vector.<Tween>;
-
-    private var _hider: Image;
-    private var _gameOver: TextField;
 
     public function FieldView(field: Field) {
         _field = field;
     }
 
     override protected function initialize():void {
+        createFromFlash(FieldViewMC);
+
         _field.addEventListener(Field.FORCE_UPDATE, handleForceUpdate);
         _field.addEventListener(Field.GAME_OVER, handleGameOver);
 
-        _back = new Image(Resources.getTexture("back"));
-        _back.width = 400;
-        _back.height = 400;
-        addChild(_back);
+        _container = this.container;
+        _phantomContainer = this.phantomContainer;
 
-        _container = new Sprite();
-        addChild(_container);
-
-        _phantomContainer = new Sprite();
-        addChild(_phantomContainer);
+        _hider = this.hider;
+        _hider.visible = false;
+        _gameOver = _hider.gameover;
+        _gameOver.text = "Game Over";
 
         _cellsDict = new Dictionary();
         for (var i:int = 0; i < _field.cells.length; i++) {
@@ -64,22 +61,12 @@ public class FieldView extends Screen {
         }
 
         _tweens = new <Tween>[];
-
-        _hider = new Image(Resources.getTexture("hider"));
-        _hider.width = 400;
-        _hider.height = 400;
-        _hider.visible = false;
-        addChild(_hider);
-
-        _gameOver = new TextField(400, 400, "Game Over", "gameover", -1, 0xFFFFFF);
-        _gameOver.batchable = true;
-        _gameOver.visible = false;
-        addChild(_gameOver);
     }
 
     private function handleFill(e: Event):void {
         var cell: Cell = e.currentTarget as Cell;
-        _cellsDict[cell].appear();
+        var cellView: CellView = _cellsDict[cell];
+        cellView.appear();
     }
 
     private function handleMove(e: Event):void {
@@ -123,6 +110,8 @@ public class FieldView extends Screen {
     }
 
     override public function destroy():void {
+        super.destroy();
+
         for (var cell: Cell in _cellsDict) {
             cell.removeEventListener(Cell.FILL, handleFill);
             cell.removeEventListener(Cell.MOVE, handleMove);
@@ -132,28 +121,16 @@ public class FieldView extends Screen {
         }
         _cellsDict = null;
 
-        _back.removeFromParent(true);
-        _back = null;
-
-        _container.removeFromParent(true);
-        _container = null;
-
-        _phantomContainer.removeFromParent(true);
-        _phantomContainer = null;
-
         _field.removeEventListener(Field.FORCE_UPDATE, handleForceUpdate);
         _field.removeEventListener(Field.GAME_OVER, handleGameOver);
         _field = null;
 
-        _hider.removeFromParent(true);
+        _container = null;
+        _phantomContainer = null;
         _hider = null;
-
-        _gameOver.removeFromParent(true);
         _gameOver = null;
 
         removeFromParent(true);
-
-        super.destroy();
     }
 }
 }

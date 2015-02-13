@@ -26,10 +26,6 @@ public class Application extends Sprite implements IStartable {
         Resources.init(new MockAtlas());
 
         newGame();
-
-        stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
-
-        stage.addEventListener(TouchEvent.TOUCH, handleTouch);
     }
 
     private function newGame():void {
@@ -40,9 +36,15 @@ public class Application extends Sprite implements IStartable {
         addChild(_fieldView);
 
         _field.start();
+
+        stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+        stage.addEventListener(TouchEvent.TOUCH, handleTouch);
     }
 
     private function endGame():void {
+        stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+        stage.removeEventListener(TouchEvent.TOUCH, handleTouch);
+
         _fieldView.destroy();
         _fieldView = null;
 

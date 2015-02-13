@@ -9,12 +9,13 @@ import com.agnither.utils.gui.components.Label;
 import starling.animation.Transitions;
 import starling.core.Starling;
 
-import view.field.CellTile;
+import view.field.CellViewMC;
 
-public class CellView extends AbstractComponent {
+public dynamic class CellView extends AbstractComponent {
 
     private var _cell: Cell;
 
+    private var _container: AbstractComponent;
     private var _label: Label;
 
     private var _value: int;
@@ -27,7 +28,7 @@ public class CellView extends AbstractComponent {
         if (_value) {
             _label.text = String(_value);
         }
-        visible = true;
+        _container.visible = true;
     }
 
     public function CellView(cell: Cell) {
@@ -35,34 +36,37 @@ public class CellView extends AbstractComponent {
     }
 
     override protected function initialize():void {
-        createFromFlash(CellTile);
+        createFromFlash(CellViewMC);
 
-        _label = _links.numbers;
+        _container = this.container;
+        _label = _container.numbers;
 
         _value = 0;
 
-        // TODO: cell placement
-        visible = false;
+        _container.visible = false;
     }
 
     public function appear():void {
-        scaleX = 0;
-        scaleY = 0;
+        _container.scaleX = 0;
+        _container.scaleY = 0;
         update();
-        Starling.juggler.tween(this, 0.3, {scaleX: 1, scaleY: 1, transition: Transitions.EASE_OUT});
+        Starling.juggler.tween(_container, 0.3, {scaleX: 1, scaleY: 1, transition: Transitions.EASE_OUT});
     }
 
     public function update():void {
-        value = _cell.value;
-        visible = _cell.value>0;
+        if (_cell) {
+            value = _cell.value;
+            visible = _cell.value>0;
+        }
     }
 
     override public function destroy():void {
         super.destroy();
 
-        _label = null;
-
         _cell = null;
+
+        _container = null;
+        _label = null;
 
         removeFromParent(true);
     }
