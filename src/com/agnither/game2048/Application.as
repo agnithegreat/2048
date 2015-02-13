@@ -4,9 +4,9 @@
 package com.agnither.game2048 {
 import com.agnither.game2048.enums.DirectionEnum;
 import com.agnither.game2048.model.Field;
-import com.agnither.game2048.storage.MockAtlas;
 import com.agnither.game2048.storage.Resources;
 import com.agnither.game2048.view.FieldView;
+import com.agnither.utils.gui.atlas.AtlasFactory;
 import com.utils.MemoryTracker;
 
 import flash.ui.Keyboard;
@@ -17,13 +17,15 @@ import starling.events.Touch;
 import starling.events.TouchEvent;
 import starling.events.TouchPhase;
 
+import view.atlases.Atlas1;
+
 public class Application extends Sprite implements IStartable {
 
     private var _field: Field;
     private var _fieldView: FieldView;
 
     public function start():void {
-        Resources.init(new MockAtlas());
+        Resources.init(AtlasFactory.fromAtlasMC(Atlas1));
 
         newGame();
     }

@@ -2,6 +2,8 @@
  * Created by kirillvirich on 10.02.15.
  */
 package com.agnither.game2048.storage {
+import com.agnither.utils.gui.atlas.Atlas;
+
 import starling.textures.Texture;
 import starling.textures.TextureAtlas;
 
@@ -11,6 +13,7 @@ public class Resources {
 
     public static function init(resources: Atlas):void {
         _resources = resources;
+        _resources.build();
     }
 
     public static function getAtlas():Texture {
